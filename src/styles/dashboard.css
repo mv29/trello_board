@@ -1,0 +1,38 @@
+.dashboard {
+    margin: 20px;
+}
+.dashboard .row {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.list {
+    display: inline-block;
+    float: none;
+    width: 350px;
+    height: auto;
+    max-height: 600px;
+    color: black;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border: 1px solid black;
+    margin: 10px;
+}
+
+.list_card {
+    width: inherit;
+    max-width: 300px;
+    margin-left: 24px;
+    margin-top: 10px;
+    height: auto;
+    cursor: move;
+}
+.list_delete_button {
+    float: right;
+    margin-right: 10px;
+}
+
+.list_create_button {
+    /* float: right; */
+}
