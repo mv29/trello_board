@@ -1,15 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import ListCard from './listCard'
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useFormik } from 'formik';
-import db from '../db';
 
-function List({title, removeList, id, cardsList, addCard, removeCard, cardsListMv}) {
-
+function List({title, removeList, id, cardsList, addCard, removeCard}) {
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     
@@ -48,12 +45,12 @@ function List({title, removeList, id, cardsList, addCard, removeCard, cardsListM
         </div>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-             <Modal.Title>Create New List</Modal.Title>
+             <Modal.Title>Create New Card</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={formik.handleSubmit}>
                 <Form.Group controlId="cardTitleInput">
-                    <Form.Label>List Title</Form.Label>
+                    <Form.Label>Card Title</Form.Label>
                     <Form.Control 
                     type="text" 
                     name="title" 

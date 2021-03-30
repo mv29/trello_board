@@ -46,6 +46,14 @@ function Dashboard() {
     })();
   }, []);
 
+  function updateCardsList(newCardList, newCard, listId, insertOnfront = false) {
+    if (newCardList.hasOwnProperty(newCard.listId)) {
+      insertOnfront ? newCardList[listId].unshift(newCard) : newCardList[listId].push(newCard);;
+    } else {
+      newCardList[listId] = [];
+      newCardList[listId].push(newCard);
+    }
+  }
 
   async function addCard(values) {
     try {
@@ -57,12 +65,7 @@ function Dashboard() {
       const response = await db.cards.add(newCard);
       newCard.id = response; 
       let newCardList = {...cardsList};
-      if (newCardList.hasOwnProperty(newCard.listId)) {
-        newCardList[newCard.listId].push(newCard);
-      } else {
-        newCardList[newCard.listId] = [];
-        newCardList[newCard.listId].push(newCard);
-      }
+      updateCardsList(newCardList,newCard,values.listId);
       setCardsList(newCardList);
     } catch (err) {
     console.log(err);
@@ -70,7 +73,7 @@ function Dashboard() {
   }
 
   async function removeCard(event) {
-    alert('are you sure');
+    alert('Are you sure');
     try {
       let [cardId, listId] =  event.target.id.split('#');
       cardId = parseInt(cardId);
@@ -129,12 +132,7 @@ function Dashboard() {
       await db.cards.update(card.id, {listId: newListId})
       let newCardList = {...cardsList};
       newCardList[previousListId] = newCardList[previousListId].filter((cardobj) => cardobj.id !== card.id)
-      if (newCardList.hasOwnProperty(newListId)) {
-        newCardList[newListId].push(card);
-      } else {
-        newCardList[newListId] = [];
-        newCardList[newListId].push(card);
-      }
+      updateCardsList(newCardList,card,newListId,true);
       setCardsList(newCardList);
     } catch(err) {
       console.log(err);
@@ -202,7 +200,6 @@ function Dashboard() {
                     id={list.id}
                     removeList={removeList}
                     setCardsList={setCardsList}
-                    cardsListMv={cardsList}
                     cardsList={cardsList[list.id] || []}
                     addCard={addCard}
                     removeCard={removeCard}

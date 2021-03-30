@@ -3,7 +3,6 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 function ListCard({id, listId,  title, description,removeCard}) {
-    
     return (
         <>
         <Card id={id}>
