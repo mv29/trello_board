@@ -121,25 +121,24 @@ function Dashboard() {
     event.preventDefault();
   }
 
-  function cardOnDrop(event, newListId) {
-    let card = JSON.parse(event.dataTransfer.getData("id"));
-    let previousListId = card.listId;
-    console.log("cardOnDrop");
-    console.log(card);
-    card.listId = newListId;
-    let newCardList = {};
-    debugger
-    cardsList.each((key) => {
-      if(key === newListId) {
-        card.listId = newListId
-        newCardList[key] = cardsList[key];
-      } else if(key === card.lastId) {
-        newCardList[key] = cardsList.filter(cardObj => cardObj.id === previousListId );
+  async function cardOnDrop(event, newListId) {
+    try {
+      let card = JSON.parse(event.dataTransfer.getData("id"));
+      let previousListId = card.listId;
+      card.listId = newListId;
+      await db.cards.update(card.id, {listId: newListId})
+      let newCardList = {...cardsList};
+      newCardList[previousListId] = newCardList[previousListId].filter((cardobj) => cardobj.id !== card.id)
+      if (newCardList.hasOwnProperty(newListId)) {
+        newCardList[newListId].push(card);
       } else {
-        newCardList[key] = cardsList[key];
+        newCardList[newListId] = [];
+        newCardList[newListId].push(card);
       }
-    });
-    setCardsList(newCardList);
+      setCardsList(newCardList);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   const formik = useFormik({
