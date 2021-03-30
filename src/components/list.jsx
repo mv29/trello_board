@@ -6,7 +6,8 @@ import Form from 'react-bootstrap/Form';
 import { useFormik } from 'formik';
 import db from '../db';
 
-function List({title, removeList, id, cardsList, addCard, removeCard}) {
+function List({title, removeList, id, cardsList, addCard, removeCard, cardsListMv}) {
+
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -41,7 +42,7 @@ function List({title, removeList, id, cardsList, addCard, removeCard}) {
         <div>
             {cardsList.map(card => (
             <div className="list_card" draggable="true" key={card.title} onDragStart={(event) => cardDragStart(event,card)}>
-                <ListCard id={card.id} description={card.description} title={card.title} removeCard={removeCard}></ListCard>
+                <ListCard id={card.id} listId={id} description={card.description} title={card.title} removeCard={removeCard}></ListCard>
             </div>
             ))}
         </div>

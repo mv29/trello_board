@@ -2,14 +2,14 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
-function ListCard({id, title, description,removeCard}) {
+function ListCard({id, listId,  title, description,removeCard}) {
     
     return (
         <>
         <Card id={id}>
             <Card.Header>
                 {title}
-                <Button variant="danger" id={id} onClick={removeCard} size="sm" className="list_delete_button">
+                <Button variant="danger" id={`${id}#${listId}`} onClick={removeCard} size="sm" className="list_delete_button">
                     X
                 </Button>
             </Card.Header>

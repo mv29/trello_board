@@ -20,7 +20,6 @@ function Dashboard() {
         let list = await db.lists.toArray();
         setLists(list);
       } catch (err) {
-//         alert('error occured while fetching data please see console for further investigation');
         console.log(err);
       }
     })();
@@ -31,38 +30,33 @@ function Dashboard() {
       let initCardList = {};
       try {
         let response = await db.cards.toArray();
-        debugger
-        response.each((card) => {
-          if(initCardList.hasOwnProperty(card.lastId)) {
-            initCardList[card.lastId].push(card);
+        for(let card in response) {
+          let listId = response[card].listId.toString();
+          if(initCardList.hasOwnProperty(listId)) {
+            initCardList[listId].push(response[card]);
           } else {
-            initCardList[card.lastId] = [];
-            initCardList[card.lastId].push(card);
+            initCardList[listId] = [];
+            initCardList[listId].push(response[card]);
           }
-        });
+        }
         setCardsList(initCardList);
       } catch (err) {
-//         alert('error occured while fetching data please see console for further investigation');
         console.log(err);
       }
     })();
   }, []);
 
-  let mv = 10;
+
   async function addCard(values) {
-  debugger
     try {
       let newCard = {
         title: values.title,
         description: values.description,
         listId: values.listId,
-        id: mv
       }
-      mv++
-      // const response = await db.cards.add(newCard);
-      // newCard.id = response;
-      // setCardsList(cardsList.concat(newCard));
-      let newCardList = cardsList;
+      const response = await db.cards.add(newCard);
+      newCard.id = response; 
+      let newCardList = {...cardsList};
       if (newCardList.hasOwnProperty(newCard.listId)) {
         newCardList[newCard.listId].push(newCard);
       } else {
@@ -70,9 +64,7 @@ function Dashboard() {
         newCardList[newCard.listId].push(newCard);
       }
       setCardsList(newCardList);
-      handleClose();
     } catch (err) {
-//       alert(err); // TypeError: failed to fetch
     console.log(err);
     }
   }
@@ -80,11 +72,15 @@ function Dashboard() {
   async function removeCard(event) {
     alert('are you sure');
     try {
-      await db.cards.delete(parseInt(event.target.id));
-      debugger
-      setCardsList(cardsList.filter(card => card.id === event.target.id));
+      let [cardId, listId] =  event.target.id.split('#');
+      cardId = parseInt(cardId);
+      listId = parseInt(listId);
+      await db.cards.delete(cardId);
+      let newCardList = {...cardsList};
+      newCardList[listId] = newCardList[listId].filter((card) => card.id !== cardId)
+      setCardsList(newCardList);
     } catch (err) {
-      alert(err); // TypeError: failed to fetch
+      console.log(err);
     }
   }
 
@@ -92,40 +88,34 @@ function Dashboard() {
     try {
       await db.cards.where('listId').equals(listId).delete();
     } catch (err) {
-      alert('error occured while fetching data please see console for further investigation')
-      console.log(err); // TypeError: failed to fetch
+      console.log(err);
     }
   }
 
   async function addList(values) {
     try {
       const response = await db.lists.add({ title: values.title });
-      debugger
       setLists(lists.concat({ title: values.title, id: response }));
       handleClose();
     } catch (err) {
-      alert(err); // TypeError: failed to fetch
+      console.log(err);
     }
   }
 
   async function removeList(event) {
-    alert('are you sure');
+    alert('Are you sure.It will delete all the cards present in this list');
     try {
       await db.lists.delete(parseInt(event.target.id));
-      setLists(lists.filter(list => list.id === event.target.id));
+      let newList = lists.filter(list => list.id !== parseInt(event.target.id));
+      setLists(newList);
+      let newCardList = {...cardsList};
+      delete(newCardList[event.target.id]);
+      setCardsList(newCardList);
       deleteAllCards(parseInt(event.target.id));
     } catch (err) {
-      alert(err); // TypeError: failed to fetch
+      console.log(err);
     }
   }
-
-  const formik = useFormik({
-    initialValues: {
-      title: '',
-    },
-    onSubmit: values => { addList(values) },
-  }
-  );
 
   function cardDragOver(event) {
     event.preventDefault();
@@ -151,6 +141,14 @@ function Dashboard() {
     });
     setCardsList(newCardList);
   }
+
+  const formik = useFormik({
+    initialValues: {
+      title: '',
+    },
+    onSubmit: values => { addList(values) },
+  }
+  );
 
   return (
     <>
@@ -192,7 +190,7 @@ function Dashboard() {
             </Button>
             </Modal.Footer>
           </Modal>
-          <div className="row text-center list_container">
+          <div className="d-flex text-center align-items-start list_container">
             {
               lists.map(list => (
                 <div
@@ -205,6 +203,7 @@ function Dashboard() {
                     id={list.id}
                     removeList={removeList}
                     setCardsList={setCardsList}
+                    cardsListMv={cardsList}
                     cardsList={cardsList[list.id] || []}
                     addCard={addCard}
                     removeCard={removeCard}
